@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class PlayerMovement : MonoBehaviour
 {
+    public Transform transform;
     public Rigidbody rb;
     public float movementSpeed = 1f;
     private Vector3 moveDirection;
@@ -21,6 +22,7 @@ public class PlayerMovement : MonoBehaviour
 
     private bool touchingFloor;
     public float jumpForce = 10f;
+    private float backupGravityTimer;
 
     void Start()
     {
@@ -62,6 +64,16 @@ public class PlayerMovement : MonoBehaviour
         if (touchingFloor && Input.GetKey(KeyCode.Space))
         {
             Jump();
+        }
+
+        if (!touchingFloor)
+        {
+            backupGravityTimer++;
+
+            if (backupGravityTimer > 250)
+            {
+                BackupGravity();
+            }
         }
     }
 
@@ -163,9 +175,17 @@ public class PlayerMovement : MonoBehaviour
         Debug.Log("I'm jumping");
         touchingFloor = false;
         rb.AddForce(0, jumpForce * Time.deltaTime, 0, ForceMode.VelocityChange);
+    }
 
-        // Jest bug, który powoduje ¿e czasami gracz zupe³nie traci umiejêtnoœæ skakania
-        // Zak³adam, ¿e jest to b³¹d wynikaj¹cy z wykrywania kolizji miêdzy graczem a pod³og¹
-        // Wymaga naprawy
+    void BackupGravity()
+    {
+        Debug.Log("Player has been off the ground for too long. Initializing backup gravity");
+        transform.position = new Vector3 (transform.position.x, 0.5f, transform.position.z);    
+        backupGravityTimer = 0;
+        touchingFloor = true;
+
+        // Obecny jest bug, zak³adam z kolizj¹, który pozostawia gracza w stanie wiecznego pozornego skoku, przez co nie mo¿e skakaæ wcale
+        // Niezbyt ³adny fix ale wygl¹da na to, ¿e dzia³a
+        // Problemem jest mo¿liwoœæ utkniêcia gracza w przeszkodach w rzadkich sytuacjach
     }
 }
