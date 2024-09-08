@@ -70,7 +70,7 @@ public class PlayerMovement : MonoBehaviour
         {
             backupGravityTimer++;
 
-            if (backupGravityTimer > 250)
+            if (backupGravityTimer > 350)
             {
                 BackupGravity();
             }
